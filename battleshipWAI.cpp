@@ -310,6 +310,7 @@ char hitRandom(char shipBoard[][10], char attackBoard[][10]) {
 	int y;
 	bool done = false;
 	bool stackGood = false;
+	bool justMiss = false;
     char didHitChar;
 	string letters = "ABCDEFGHIJ";
 	x = rand() % 10;
@@ -341,6 +342,7 @@ char hitRandom(char shipBoard[][10], char attackBoard[][10]) {
 				cout << "\nEnemy attacked at " << letters.at(x) << " " << y + 1 << endl;
 				cout << "They hit...\n";
 				shouldUseLogic = true;
+			    numOfShips++;
 
 				xStack.push(x + 1);
 				yStack.push(y);
@@ -365,58 +367,56 @@ char hitRandom(char shipBoard[][10], char attackBoard[][10]) {
 				cout << "They missed!\n";
 			}  
 		} else {
-		    if(AIEnds == 2 && !isMultipleShips) {
-		        isMultipleShips = true;
-		        shipsLeft = numOfShips;
-		    }
 		    didHitChar = didHit(shipBoard, xStack.top(), yStack.top());
 			if(didHit(shipBoard, xStack.top(), yStack.top()) != '#') {
 				shipBoard[xStack.top()][yStack.top()] = '#';
 				displayBoards(attackBoard, shipBoard);
 				cout << "\nEnemy attacked at " << letters.at(xStack.top()) << " " << yStack.top() + 1 << endl;
 				cout << "They hit...\n";
-			    numOfShips++;
+				if(!isMultipleShips) {
+			        numOfShips++;
+				}
 			    AIPrevHit = true;
-				    x = xStack.top();
-				    y = yStack.top();
-		            xStack.pop();
-		            yStack.pop();
-			        switch(dirStack.top()) {
-					case 'U':   dirStack.pop();
-					            revPush(x - 1, y, 'L');
-					            revPush(x + 1, y, 'R');
+				x = xStack.top();
+				y = yStack.top();
+		        xStack.pop();
+		        yStack.pop();
+			    switch(dirStack.top()) {
+				case 'U':   dirStack.pop();
+				            revPush(x - 1, y, 'L');
+				            revPush(x + 1, y, 'R');
 
-								xStack.push(x);
-				                yStack.push(y - 1);
-			                	dirStack.push('U');
-								break;
+							xStack.push(x);
+			                yStack.push(y - 1);
+		                	dirStack.push('U');
+							break;
 
-					case 'D':	dirStack.pop();
-					            revPush(x - 1, y, 'L');
-					            revPush(x + 1, y, 'R');
+				case 'D':	dirStack.pop();
+				            revPush(x - 1, y, 'L');
+				            revPush(x + 1, y, 'R');
 
-								xStack.push(x);
-				                yStack.push(y + 1);
-			                	dirStack.push('D');
-								break;
+							xStack.push(x);
+			                yStack.push(y + 1);
+		                	dirStack.push('D');
+							break;
 
-					case 'L':	dirStack.pop();
-					            revPush(x, y - 1, 'U');
-					            revPush(x, y + 1, 'D');
+				case 'L':	dirStack.pop();
+				            revPush(x, y - 1, 'U');
+				            revPush(x, y + 1, 'D');
 
-								xStack.push(x - 1);
-				                yStack.push(y);
-				                dirStack.push('L');
-								break;
+							xStack.push(x - 1);
+			                yStack.push(y);
+			                dirStack.push('L');
+							break;
 
-					case 'R':	dirStack.pop();
-					            revPush(x, y - 1, 'U');
-					            revPush(x, y + 1, 'D');
+				case 'R':	dirStack.pop();
+				            revPush(x, y - 1, 'U');
+				            revPush(x, y + 1, 'D');
 
-								xStack.push(x + 1);
-                				yStack.push(y);
-                				dirStack.push('R');
-								break;
+							xStack.push(x + 1);
+            				yStack.push(y);
+            				dirStack.push('R');
+							break;
 				}
 			} else {
 				shipBoard[xStack.top()][yStack.top()] = '@';
@@ -430,16 +430,12 @@ char hitRandom(char shipBoard[][10], char attackBoard[][10]) {
 		    	    AIEnds++;
 		    	}
 			}
-			if(xStack.empty()) {
-				shouldUseLogic = false;
-			}
+			if(AIEnds == 2 && !isMultipleShips) {
+		        isMultipleShips = true;
+		        shipsLeft = numOfShips;
+		    }
 		}
 	}
-    if(!(xStack.empty())) {
-        cout << xStack.top() << " " << xStack.size() << endl;
-        cout << yStack.top() << " " << yStack.size() << endl;
-        cout << dirStack.top() << " " << dirStack.size() << endl;
-    }
 	return didHitChar;
 }
 
